@@ -5,11 +5,21 @@
 <button id="btnShowModal" class="btn btn-primary center-block"> PAGAR </button>
 
 <script>
+    if (typeof OPC !== typeof undefined) {
+        prestashop.on('opc-payment-getPaymentList-complete', () => initRedsyspur());
+    } else if (typeof AppOPC !== typeof undefined) {
+        $(document).on('opc-load-payment:completed', () => initRedsyspur());
+    }
+
     window.addEventListener('load', function() {
+        initRedsyspur();
+    });
+
+    function initRedsyspur() {
         {if $smarty.const._PS_VERSION_ >= 1.7}
             if($("#conditions-to-approve input[type=checkbox]").size()>0 && !$("#conditions-to-approve input[type=checkbox]")[0].checked){
                 $("#btnShowModal").hide();
-                
+
                 const conditions_to_approve = $("#conditions-to-approve input[type=checkbox]")[0];
                 conditions_to_approve.addEventListener('click', function(){
                     if (conditions_to_approve.checked) {
@@ -43,7 +53,7 @@
         window.addEventListener('message', function(event) {
             parsePaymentResponse(event);
         });
-    });
+    }
 
     function getPaymentResponse(response){
         window.location.href = response.ReturnURL;

@@ -9,10 +9,10 @@
 		$("#aRedsysReference").click(function( event ) {
 			  event.preventDefault();
 		});
-		
+
 		$("#redsysRef_title").hide();
 		$("#redsysRef_proc").show();
-		
+
 		$.ajax({
 	        url: "{$ref_url}",
 	        type: "POST",
@@ -62,13 +62,13 @@
 		{if $smarty.const._PS_VERSION >= 1.7}
 			<span id="redsys-error-tarjeta-nueva" style="color: red; font-size: small;">{l s='Ha de aceptar los términos y condiciones para continuar' mod='redsys'}</span>
 		{/if}
-		
+
 		<table style="margin: 0 auto;" id="checkboxGuardar">
 			<tr>
 			</tr>
 			<tr>
 				<td>
-					<input type="checkbox" id="check-guardar" name="check-guardar"/> 
+					<input type="checkbox" id="check-guardar" name="check-guardar"/>
 				</td>
 				<td id="guardar-tarj">
 					<label for="check-guardar">{l s='Guardar tarjeta para futuras compras en esta tienda' mod='redsys'}</label>
@@ -80,16 +80,22 @@
 	<input type="hidden" id="errorCode"></input>
 	<script>
 		<!-- Petición de carga de iframes con estilos para el input-->
-		
-		getInSiteForm('insite-form-container','{$btn_style}','{$body_style}','{$form_style}','{$form_text_style}','{l s=$btn_text mod='redsys'}','{$merchant_fuc}','{$merchant_term}','{$merchant_order}');
-		
+		var timeOutRedsyspur = setInterval(function () {
+			if (typeof getInSiteForm !== typeof undefined) {
+				getInSiteForm('insite-form-container','{$btn_style}','{$body_style}','{$form_style}','{$form_text_style}','{l s=$btn_text mod='redsys'}','{$merchant_fuc}','{$merchant_term}','{$merchant_order}');
+				initRedsyspur();
+
+				clearTimeout(timeOutRedsyspur);
+			}
+		}, 500);
+
 		function cargaValoresBrowser3DS() {
 
 			var valores3DS = new Object();
 
 			//browserJavaEnabled
 			valores3DS.browserJavaEnabled = navigator.javaEnabled();
-			
+
 			//browserJavascriptEnabled
 			valores3DS.browserJavascriptEnabled = true;
 
@@ -146,8 +152,8 @@
                 data: {
                     {if $allow_ref==true}
                         "save":document.getElementById("check-guardar").checked,
-                    {/if}               
-                    "idOper":document.getElementById("token").value, 
+                    {/if}
+                    "idOper":document.getElementById("token").value,
                     "idCart":"{$idCart}",
 					"merchant_order":"{$merchant_order}",
                     "valores3DS":cargaValoresBrowser3DS()
@@ -203,6 +209,10 @@
         });
 
     	window.addEventListener('load', function() {
+			initRedsyspur();
+		});
+
+		function initRedsyspur() {
 			loadRedsysForm();
 			if (jQuery.ui !== 'undefined'){
 				$.getScript("{$this_path|escape:'htmlall'}/views/templates/front/js/jquery-ui.min.js");
@@ -218,7 +228,7 @@
 					$("#redsys-hosted-pay-button").hide();
 					$("#redsys-error-tarjeta-nueva").show();
 					$("#checkboxGuardar").hide();
-					
+
 					const conditions_to_approve = $("#conditions-to-approve input[type=checkbox]")[0];
 					conditions_to_approve.addEventListener('click', function(){
 						if (conditions_to_approve.checked) {
@@ -237,6 +247,6 @@
 
 				}
 			{/if}
-		});
+		}
 	</script>
 </div>
